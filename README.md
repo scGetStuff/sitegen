@@ -27,3 +27,9 @@ http://localhost:8888
 -   `rm public/*`
 -   copy static assets to `public/`
 -   generate HTML file for each Markdown file in `content/`
+
+# type hints & mypy
+
+-   I'm using type hints because I hate languages that are not static typed
+-   but, not using mypy yet
+-   the IDE behaves better with the hints; that's good enough for me
