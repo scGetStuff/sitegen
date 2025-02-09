@@ -1,11 +1,3 @@
-# inline text
-#   Normal text
-#   Bold text
-#   Italic text
-#   Code text
-#   Links
-#   Images
-
 from enum import Enum
 from typing import Self
 
@@ -25,15 +17,15 @@ class TextNode:
         self.type = type
         self.url = url
 
-    def __eq__(self, other: Self):
+    def __eq__(self, other: Self) -> bool:
         return (
             self.text == other.text
             and self.type == other.type
             and self.url == other.url
         )
 
-    def __ne__(self, other: Self):
+    def __ne__(self, other: Self) -> bool:
         return not self.__eq__(other)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"TextNode({self.text}, {self.type.value}, {self.url})"

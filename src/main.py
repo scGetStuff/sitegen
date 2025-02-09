@@ -1,6 +1,5 @@
 def main():
-    # print("Build a Static Site Generator")
-    print("hello world")
+    print("Build a Static Site Generator")
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from htmlnode import HTMLNode
 css1 = {
     "class": "stuff",
 }
+# TODO: this breaks when real nodes are done
 children = ["h1", "ul"]
 value = "This is an HTML node"
 

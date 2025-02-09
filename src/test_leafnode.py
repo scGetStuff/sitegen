@@ -16,21 +16,24 @@ to_html_tests = [
     },
 ]
 
-error_test = {
-    "args": ("p", None),
-    "expected": "ValueError",
-}
+to_html_errors = [
+    {
+        "args": ("p", None),
+        "expected": ValueError,
+    }
+]
 
 
 class TestLeafNode(unittest.TestCase):
 
     def test_to_html(self):
+        for test in to_html_errors:
+            node = LeafNode(*test["args"])
+            self.assertRaises(test["expected"], node.to_html)
+
         for test in to_html_tests:
             node = LeafNode(*test["args"])
             self.assertEqual(node.to_html(), test["expected"])
-
-        node = LeafNode(*error_test["args"])
-        self.assertRaises(ValueError, node.to_html)
 
 
 if __name__ == "__main__":

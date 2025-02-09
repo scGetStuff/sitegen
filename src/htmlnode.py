@@ -19,17 +19,21 @@ class HTMLNode:
         self.children = children
         self.props = props
 
-    def to_html(self):
+    def to_html(self) -> str:
         raise NotImplementedError()
 
-    def props_to_html(self):
+    def props_to_html(self) -> str:
         if self.props == None:
             return ""
+
         return "".join(
             list(map(lambda item: f' {item[0]}="{item[1]}"', self.props.items()))
         )
 
-    def __repr__(self):
-        s = f"HTMLNode: <{self.tag}{self.props_to_html()}>\nchildren:{ \
-            len(self.children) if self.children else 0}\nvalue:{self.value}"
-        return s
+    def __repr__(self) -> str:
+        # return f"HTMLNode: <{self.tag}{self.props_to_html()}>\nchildren:{len(self.children) if self.children else 0}\nvalue:{self.value if self.value else ""}"
+        return (
+            f"HTMLNode: <{self.tag}{self.props_to_html()}>"
+            f"\nchildren:{len(self.children) if self.children else 0}"
+            f"\nvalue:{self.value if self.value else ""}"
+        )
