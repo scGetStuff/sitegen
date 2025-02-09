@@ -1,4 +1,3 @@
-from typing import Self
 from htmlnode import HTMLNode
 
 
@@ -10,10 +9,10 @@ class LeafNode(HTMLNode):
         props: dict[str, str] = None,
     ):
         super().__init__(tag, value, None, props)
-        if value == None:
-            raise ValueError("leaf nodes must have a value")
 
     def to_html(self):
+        if self.value == None:
+            raise ValueError("leaf nodes must have a value")
         if self.tag == None:
             return self.value
 
