@@ -21,7 +21,5 @@ class ParentNode(HTMLNode):
             f"<{self.tag}{self.props_to_html()}>{self.value}{self.kids()}</{self.tag}>"
         )
 
-    # TODO: this is only good for leaf children, first test case
-    # have not done the recursion yet
     def kids(self) -> str:
         return "".join(list(map(lambda kid: kid.to_html(), self.children)))

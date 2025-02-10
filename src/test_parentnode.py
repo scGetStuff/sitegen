@@ -5,6 +5,9 @@ from leafnode import LeafNode
 # TODO: each class I've been improving the data driven test setup
 # need to go back and refactor all
 
+# TODO: nesting ParentNode objects
+
+
 to_html_tests = [
     {
         "node": ParentNode(
@@ -17,6 +20,43 @@ to_html_tests = [
             ],
         ),
         "expected": "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>",
+    },
+    {
+        "node": ParentNode(
+            "div",
+            [
+                LeafNode(None, "Normal text"),
+                ParentNode(
+                    "p",
+                    [
+                        LeafNode("b", "Bold text"),
+                        LeafNode(None, "Normal text"),
+                    ],
+                ),
+            ],
+        ),
+        "expected": "<div>Normal text<p><b>Bold text</b>Normal text</p></div>",
+    },
+    {
+        "node": ParentNode(
+            "div",
+            [
+                LeafNode(None, "div1"),
+                ParentNode(
+                    "div",
+                    [
+                        LeafNode(None, "div2"),
+                        ParentNode(
+                            "div",
+                            [
+                                LeafNode(None, "div3"),
+                            ],
+                        ),
+                    ],
+                ),
+            ],
+        ),
+        "expected": "<div>div1<div>div2<div>div3</div></div></div>",
     },
 ]
 
