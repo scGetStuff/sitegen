@@ -1,5 +1,5 @@
 import unittest
-from main import text_node_to_html_node as convert
+from util import text_node_to_html_node as convert
 from textnode import TextNode, TextType
 
 
