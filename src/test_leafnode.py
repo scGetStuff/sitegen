@@ -3,22 +3,22 @@ from leafnode import LeafNode
 
 to_html_tests = [
     {
-        "args": ("p", "This is a paragraph of text."),
+        "node": LeafNode("p", "This is a paragraph of text."),
         "expected": "<p>This is a paragraph of text.</p>",
     },
     {
-        "args": ("a", "Click me!", {"href": "https://www.google.com"}),
+        "node": LeafNode("a", "Click me!", {"href": "https://www.google.com"}),
         "expected": '<a href="https://www.google.com">Click me!</a>',
     },
     {
-        "args": (None, "raw text test"),
+        "node": LeafNode(None, "raw text test"),
         "expected": "raw text test",
     },
 ]
 
 to_html_errors = [
     {
-        "args": ("p", None),
+        "node": LeafNode("p", None),
         "expected": ValueError,
     }
 ]
@@ -28,12 +28,10 @@ class TestLeafNode(unittest.TestCase):
 
     def test_to_html(self):
         for test in to_html_errors:
-            node = LeafNode(*test["args"])
-            self.assertRaises(test["expected"], node.to_html)
+            self.assertRaises(test["expected"], test["node"].to_html)
 
         for test in to_html_tests:
-            node = LeafNode(*test["args"])
-            self.assertEqual(node.to_html(), test["expected"])
+            self.assertEqual(test["node"].to_html(), test["expected"])
 
 
 if __name__ == "__main__":
