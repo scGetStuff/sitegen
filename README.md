@@ -33,3 +33,9 @@ http://localhost:8888
 -   I'm using type hints because I hate languages that are not static typed
 -   but, not using mypy yet
 -   the IDE behaves better with the hints; that's good enough for me
+
+# enhancments
+
+-   nested markdown
+    -   first pass only support a single level of nesting
+    -   make this `This is an *italic and **bold** word*.` work
