@@ -1,5 +1,6 @@
 import unittest
 from util import text_node_to_html_node as convert
+from util import split_nodes_delimiter as spliter
 from textnode import TextNode, TextType
 
 
@@ -49,6 +50,53 @@ convert_errors = [
     },
 ]
 
+spliter_tests = [
+    {
+        "nodes": [
+            TextNode("This is text with a `code block` word", TextType.TEXT),
+        ],
+        "args": ("`", TextType.CODE),
+        "out": [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" word", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode("multiple **bold** words **test** thingy", TextType.TEXT),
+        ],
+        "args": ("**", TextType.BOLD),
+        "out": [
+            TextNode("multiple ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" words ", TextType.TEXT),
+            TextNode("test", TextType.BOLD),
+            TextNode(" thingy", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode("*italic word* at the start", TextType.TEXT),
+        ],
+        "args": ("*", TextType.ITALIC),
+        "out": [
+            TextNode("italic word", TextType.ITALIC),
+            TextNode(" at the start", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode("This ends with a **bold word**", TextType.TEXT),
+        ],
+        "args": ("**", TextType.BOLD),
+        "out": [
+            TextNode("This ends with a ", TextType.TEXT),
+            TextNode("bold word", TextType.BOLD),
+        ],
+    },
+]
+
 
 class TestMain(unittest.TestCase):
     def test_convert(self):
@@ -57,6 +105,10 @@ class TestMain(unittest.TestCase):
 
         for test in convert_tests:
             self.assertEqual(convert(test["node"]).to_html(), test["expected"])
+
+    def test_spliter(self):
+        for test in spliter_tests:
+            self.assertEqual(spliter(test["nodes"], *test["args"]), test["out"])
 
 
 if __name__ == "__main__":
