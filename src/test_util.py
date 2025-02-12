@@ -1,6 +1,8 @@
 import unittest
 from util import text_node_to_html_node as convert
 from util import split_nodes_delimiter as spliter
+from util import extract_markdown_images as parseImages
+from util import extract_markdown_links as parseLinks
 from textnode import TextNode, TextType
 
 
@@ -97,6 +99,38 @@ spliter_tests = [
     },
 ]
 
+image_tests = [
+    {
+        "text": "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
+        "expected": [
+            ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
+            ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg"),
+        ],
+    },
+    {
+        "text": "![[(i](https://i.imgur.com/aKaOqIh.gif)",
+        "expected": [
+            ("(i", "https://i.imgur.com/aKaOqIh.gif"),
+        ],
+    },
+]
+
+link_tests = [
+    {
+        "text": "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+        "expected": [
+            ("to boot dev", "https://www.boot.dev"),
+            ("to youtube", "https://www.youtube.com/@bootdotdev"),
+        ],
+    },
+    {
+        "text": "[d)](https://www.boot.dev)",
+        "expected": [
+            ("d)", "https://www.boot.dev"),
+        ],
+    },
+]
+
 
 class TestMain(unittest.TestCase):
     def test_convert(self):
@@ -109,6 +143,14 @@ class TestMain(unittest.TestCase):
     def test_spliter(self):
         for test in spliter_tests:
             self.assertEqual(spliter(test["nodes"], *test["args"]), test["out"])
+
+    def test_parseImages(self):
+        for test in image_tests:
+            self.assertEqual(parseImages(test["text"]), test["expected"])
+
+    def test_parseLinks(self):
+        for test in link_tests:
+            self.assertEqual(parseLinks(test["text"]), test["expected"])
 
 
 if __name__ == "__main__":

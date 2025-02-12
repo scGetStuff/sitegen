@@ -1,5 +1,6 @@
 from textnode import TextNode, TextType
 from leafnode import LeafNode
+import re
 
 
 def text_node_to_html_node(node: TextNode) -> LeafNode:
@@ -79,6 +80,36 @@ def split_nodes_delimiter(
             out.append(TextNode(tail, TextType.TEXT))
 
     return out
+
+
+# This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)
+def extract_markdown_images(text: str) -> list[tuple[str, str]]:
+    # print(f"\n{text}")
+    altPattern = r"\[([^\[\]]*)\]"
+    # alts = re.findall(altPattern, text)
+    # print(alts)
+    srcPattern = r"\(([^\(\)]*)\)"
+    # srcs = re.findall(srcPattern, text)
+    # print(srcs)
+    # print(list(zip(alts, srcs)))
+
+    return re.findall(altPattern + srcPattern, text)
+
+
+# This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)
+# TODO: the lesson had `(?<!!)` prefix to the pattern
+# i don't know what purpose it serves
+def extract_markdown_links(text: str) -> list[tuple[str, str]]:
+    # print(f"\n{text}")
+    textPattern = r"\[([^\[\]]*)\]"
+    # linkTexts = re.findall(textPattern, text)
+    # print(linkTexts)
+    hrefPattern = r"\(([^\(\)]*)\)"
+    # hrefs = re.findall(hrefPattern, text)
+    # print(hrefs)
+    # print(list(zip(linkTexts, hrefs)))
+
+    return re.findall(textPattern + hrefPattern, text)
 
 
 def main():

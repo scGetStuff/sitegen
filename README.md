@@ -11,7 +11,7 @@
 # run
 
 -   `./main.sh`
--   this is suposed to be usefull somehow, I don't see it yet
+-   `./test/sh`
 
 # serve output
 
@@ -27,6 +27,10 @@ http://localhost:8888
 -   `rm public/*`
 -   copy static assets to `public/`
 -   generate HTML file for each Markdown file in `content/`
+
+# unknown
+
+-   is markdown valid? so far all the `util.py` code that does the parsing assumes things are well formed
 
 # type hints & mypy
 
