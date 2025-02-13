@@ -3,6 +3,8 @@ from util import text_node_to_html_node as convert
 from util import split_nodes_delimiter as spliter
 from util import extract_markdown_images as parseImages
 from util import extract_markdown_links as parseLinks
+from util import split_nodes_image as splitImage
+from util import split_nodes_link as splitLink
 from textnode import TextNode, TextType
 
 
@@ -58,7 +60,7 @@ spliter_tests = [
             TextNode("This is text with a `code block` word", TextType.TEXT),
         ],
         "args": ("`", TextType.CODE),
-        "out": [
+        "expected": [
             TextNode("This is text with a ", TextType.TEXT),
             TextNode("code block", TextType.CODE),
             TextNode(" word", TextType.TEXT),
@@ -69,7 +71,7 @@ spliter_tests = [
             TextNode("multiple **bold** words **test** thingy", TextType.TEXT),
         ],
         "args": ("**", TextType.BOLD),
-        "out": [
+        "expected": [
             TextNode("multiple ", TextType.TEXT),
             TextNode("bold", TextType.BOLD),
             TextNode(" words ", TextType.TEXT),
@@ -82,7 +84,7 @@ spliter_tests = [
             TextNode("*italic word* at the start", TextType.TEXT),
         ],
         "args": ("*", TextType.ITALIC),
-        "out": [
+        "expected": [
             TextNode("italic word", TextType.ITALIC),
             TextNode(" at the start", TextType.TEXT),
         ],
@@ -92,14 +94,14 @@ spliter_tests = [
             TextNode("This ends with a **bold word**", TextType.TEXT),
         ],
         "args": ("**", TextType.BOLD),
-        "out": [
+        "expected": [
             TextNode("This ends with a ", TextType.TEXT),
             TextNode("bold word", TextType.BOLD),
         ],
     },
 ]
 
-image_tests = [
+parseImages_tests = [
     {
         "text": "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
         "expected": [
@@ -108,14 +110,14 @@ image_tests = [
         ],
     },
     {
-        "text": "![[(i](https://i.imgur.com/aKaOqIh.gif)",
+        "text": "![?/\\.,&%$#@(i](https://i.imgur.com/aKaOqIh.gif)",
         "expected": [
-            ("(i", "https://i.imgur.com/aKaOqIh.gif"),
+            ("?/\\.,&%$#@(i", "https://i.imgur.com/aKaOqIh.gif"),
         ],
     },
 ]
 
-link_tests = [
+parseLinks_tests = [
     {
         "text": "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
         "expected": [
@@ -124,9 +126,117 @@ link_tests = [
         ],
     },
     {
-        "text": "[d)](https://www.boot.dev)",
+        "text": "[?/\\.,&%$#@d)](https://www.boot.dev)",
         "expected": [
-            ("d)", "https://www.boot.dev"),
+            ("?/\\.,&%$#@d)", "https://www.boot.dev"),
+        ],
+    },
+]
+
+splitImages_tests = [
+    {
+        "nodes": [
+            TextNode(
+                "![rick roll](https://i.imgur.com/aKaOqIh.gif)",
+                TextType.TEXT,
+            )
+        ],
+        "expected": [
+            TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode(
+                "leading text ![rick roll](https://i.imgur.com/aKaOqIh.gif)",
+                TextType.TEXT,
+            )
+        ],
+        "expected": [
+            TextNode("leading text ", TextType.TEXT),
+            TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode(
+                "![rick roll](https://i.imgur.com/aKaOqIh.gif) trailing text",
+                TextType.TEXT,
+            )
+        ],
+        "expected": [
+            TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+            TextNode(" trailing text", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode(
+                "leading text ![rick roll](https://i.imgur.com/aKaOqIh.gif) multiple images ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) trailing text",
+                TextType.TEXT,
+            )
+        ],
+        "expected": [
+            TextNode("leading text ", TextType.TEXT),
+            TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+            TextNode(" multiple images ", TextType.TEXT),
+            TextNode("obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" trailing text", TextType.TEXT),
+        ],
+    },
+]
+
+splitLinks_tests = [
+    {
+        "nodes": [
+            TextNode(
+                "[to boot dev](https://www.boot.dev)",
+                TextType.TEXT,
+            )
+        ],
+        "expected": [
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode(
+                "leading text [to boot dev](https://www.boot.dev)",
+                TextType.TEXT,
+            )
+        ],
+        "expected": [
+            TextNode("leading text ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode(
+                "[to boot dev](https://www.boot.dev) trailing text",
+                TextType.TEXT,
+            )
+        ],
+        "expected": [
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" trailing text", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode(
+                "leading text [to boot dev](https://www.boot.dev) multiple links [to youtube](https://www.youtube.com/@bootdotdev) trailing text",
+                TextType.TEXT,
+            )
+        ],
+        "expected": [
+            TextNode("leading text ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" multiple links ", TextType.TEXT),
+            TextNode(
+                "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+            ),
+            TextNode(" trailing text", TextType.TEXT),
         ],
     },
 ]
@@ -142,15 +252,23 @@ class TestMain(unittest.TestCase):
 
     def test_spliter(self):
         for test in spliter_tests:
-            self.assertEqual(spliter(test["nodes"], *test["args"]), test["out"])
+            self.assertEqual(spliter(test["nodes"], *test["args"]), test["expected"])
 
     def test_parseImages(self):
-        for test in image_tests:
+        for test in parseImages_tests:
             self.assertEqual(parseImages(test["text"]), test["expected"])
 
     def test_parseLinks(self):
-        for test in link_tests:
+        for test in parseLinks_tests:
             self.assertEqual(parseLinks(test["text"]), test["expected"])
+
+    def test_splitImages(self):
+        for test in splitImages_tests:
+            self.assertEqual(splitImage(test["nodes"]), test["expected"])
+
+    def test_splitLinks(self):
+        for test in splitLinks_tests:
+            self.assertEqual(splitLink(test["nodes"]), test["expected"])
 
 
 if __name__ == "__main__":

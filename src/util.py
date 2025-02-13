@@ -22,7 +22,7 @@ def text_node_to_html_node(node: TextNode) -> LeafNode:
             raise ValueError("bad TextNode type")
 
 
-# inline code, bold, and italic text; pairs of delimiter
+# inline `code`, `bold`, and `italic` text; pairs of delimiter
 def split_nodes_delimiter(
     old_nodes: list[TextNode],
     delimiter: str,
@@ -36,11 +36,8 @@ def split_nodes_delimiter(
         if node.type != TextType.TEXT:
             out.append(node)
             continue
-
-        # TODO: not sure if this is an issue
         if not node.text:
             continue
-            # raise Exception("empty input")
 
         # validate open and close delimiter
         indexes = []
@@ -60,22 +57,19 @@ def split_nodes_delimiter(
             if indexes[i] > start:
                 left = node.text[start : indexes[i]]
                 out.append(TextNode(left, TextType.TEXT))
-                # print(f"LEFT: '{left}'")
 
-            # this is the special part: bold ...
+            # add the node: `bold` ...
             start = indexes[i] + len(delimiter)
             stop = indexes[i + 1]
             mid = node.text[start:stop]
-            # print(f"MID: '{mid}'")
             out.append(TextNode(mid, text_type))
+
             # reset for next loop
             start = stop + len(delimiter)
 
         # add any trailing text
-        start = stop + len(delimiter)
         stop = len(node.text)
         tail = node.text[start:stop]
-        # print(f"TAIL: '{tail}'")
         if tail:
             out.append(TextNode(tail, TextType.TEXT))
 
@@ -84,32 +78,76 @@ def split_nodes_delimiter(
 
 # This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)
 def extract_markdown_images(text: str) -> list[tuple[str, str]]:
-    # print(f"\n{text}")
-    altPattern = r"\[([^\[\]]*)\]"
-    # alts = re.findall(altPattern, text)
-    # print(alts)
+    # TODO: this pattern makes `[` or `]` break stuff
+    altPattern = r"!\[([^\[\]]*)\]"
     srcPattern = r"\(([^\(\)]*)\)"
-    # srcs = re.findall(srcPattern, text)
-    # print(srcs)
-    # print(list(zip(alts, srcs)))
 
     return re.findall(altPattern + srcPattern, text)
 
 
 # This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)
-# TODO: the lesson had `(?<!!)` prefix to the pattern
-# i don't know what purpose it serves
 def extract_markdown_links(text: str) -> list[tuple[str, str]]:
-    # print(f"\n{text}")
     textPattern = r"\[([^\[\]]*)\]"
-    # linkTexts = re.findall(textPattern, text)
-    # print(linkTexts)
     hrefPattern = r"\(([^\(\)]*)\)"
-    # hrefs = re.findall(hrefPattern, text)
-    # print(hrefs)
-    # print(list(zip(linkTexts, hrefs)))
+    excludePattern = r"(?<!!)"
 
-    return re.findall(textPattern + hrefPattern, text)
+    return re.findall(excludePattern + textPattern + hrefPattern, text)
+
+
+# ![rick roll](https://i.imgur.com/aKaOqIh.gif)
+def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
+    out: list[TextNode] = []
+
+    for node in old_nodes:
+        text = node.text
+
+        imgs = extract_markdown_images(node.text)
+        for img in imgs:
+            parts = text.split(f"![{img[0]}]({img[1]})", 1)
+
+            # if there is leading text
+            if parts[0]:
+                out.append(TextNode(parts[0], TextType.TEXT))
+
+            # add the image
+            out.append(TextNode(img[0], TextType.IMAGE, img[1]))
+
+            # reset start for next image
+            text = parts[1]
+
+        # add any trailing text
+        if text:
+            out.append(TextNode(text, TextType.TEXT))
+
+    return out
+
+
+# [to boot dev](https://www.boot.dev)
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
+    out: list[TextNode] = []
+
+    for node in old_nodes:
+        text = node.text
+
+        links = extract_markdown_links(node.text)
+        for link in links:
+            parts = text.split(f"[{link[0]}]({link[1]})", 1)
+
+            # if there is leading text
+            if parts[0]:
+                out.append(TextNode(parts[0], TextType.TEXT))
+
+            # add the link
+            out.append(TextNode(link[0], TextType.LINK, link[1]))
+
+            # reset start for next link
+            text = parts[1]
+
+        # add any trailing text
+        if text:
+            out.append(TextNode(text, TextType.TEXT))
+
+    return out
 
 
 def main():
