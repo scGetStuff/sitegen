@@ -32,16 +32,21 @@ def split_nodes_delimiter(
     out: list[TextNode] = []
 
     for node in old_nodes:
-
         if node.type != TextType.TEXT:
             out.append(node)
             continue
+        # filter out empty text nodes
         if not node.text:
+            continue
+
+        # if passed a TEXT string with no delimiters, just return it
+        index = node.text.find(delimiter)
+        if index == -1:
+            out.append(node)
             continue
 
         # validate open and close delimiter
         indexes = []
-        index = node.text.find(delimiter)
         while index != -1:
             indexes.append(index)
             index = node.text.find(delimiter, index + 1)
@@ -53,7 +58,7 @@ def split_nodes_delimiter(
         stop = len(node.text) - 1
         for i in range(0, len(indexes), 2):
 
-            # left text before delimiter
+            # text before delimiter
             if indexes[i] > start:
                 left = node.text[start : indexes[i]]
                 out.append(TextNode(left, TextType.TEXT))
@@ -67,7 +72,7 @@ def split_nodes_delimiter(
             # reset for next loop
             start = stop + len(delimiter)
 
-        # add any trailing text
+        # trailing text
         stop = len(node.text)
         tail = node.text[start:stop]
         if tail:
@@ -81,7 +86,6 @@ def extract_markdown_images(text: str) -> list[tuple[str, str]]:
     # TODO: this pattern makes `[` or `]` break stuff
     altPattern = r"!\[([^\[\]]*)\]"
     srcPattern = r"\(([^\(\)]*)\)"
-
     return re.findall(altPattern + srcPattern, text)
 
 
@@ -90,7 +94,6 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]]:
     textPattern = r"\[([^\[\]]*)\]"
     hrefPattern = r"\(([^\(\)]*)\)"
     excludePattern = r"(?<!!)"
-
     return re.findall(excludePattern + textPattern + hrefPattern, text)
 
 
@@ -99,13 +102,19 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
     out: list[TextNode] = []
 
     for node in old_nodes:
-        text = node.text
+        if node.type != TextType.TEXT:
+            out.append(node)
+            continue
+        # filter out empty text nodes?
+        if not node.text:
+            continue
 
+        text = node.text
         imgs = extract_markdown_images(node.text)
         for img in imgs:
             parts = text.split(f"![{img[0]}]({img[1]})", 1)
 
-            # if there is leading text
+            # leading text
             if parts[0]:
                 out.append(TextNode(parts[0], TextType.TEXT))
 
@@ -115,7 +124,7 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
             # reset start for next image
             text = parts[1]
 
-        # add any trailing text
+        # trailing text
         if text:
             out.append(TextNode(text, TextType.TEXT))
 
@@ -127,13 +136,19 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
     out: list[TextNode] = []
 
     for node in old_nodes:
-        text = node.text
+        if node.type != TextType.TEXT:
+            out.append(node)
+            continue
+        # filter out empty text nodes?
+        if not node.text:
+            continue
 
+        text = node.text
         links = extract_markdown_links(node.text)
         for link in links:
             parts = text.split(f"[{link[0]}]({link[1]})", 1)
 
-            # if there is leading text
+            # leading text
             if parts[0]:
                 out.append(TextNode(parts[0], TextType.TEXT))
 
@@ -143,11 +158,30 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             # reset start for next link
             text = parts[1]
 
-        # add any trailing text
+        # trailing text
         if text:
             out.append(TextNode(text, TextType.TEXT))
 
     return out
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    textNode = TextNode(text, TextType.TEXT)
+    textNodes = split_nodes_delimiter([textNode], "**", TextType.BOLD)
+    textNodes = split_nodes_delimiter(textNodes, "*", TextType.ITALIC)
+    textNodes = split_nodes_delimiter(textNodes, "`", TextType.CODE)
+    textNodes = split_nodes_image(textNodes)
+    textNodes = split_nodes_link(textNodes)
+    # print(f"\nSTART: {text}")
+    # printList(textNodes)
+
+    return textNodes
+
+
+def printList(stuff: list[TextNode]):
+    print(f"\nSTUFF:")
+    for thingy in stuff:
+        print(f"\t{thingy}")
 
 
 def main():

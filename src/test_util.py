@@ -5,10 +5,15 @@ from util import extract_markdown_images as parseImages
 from util import extract_markdown_links as parseLinks
 from util import split_nodes_image as splitImage
 from util import split_nodes_link as splitLink
+from util import text_to_textnodes as to_textnodes
 from textnode import TextNode, TextType
 
 
 convert_tests = [
+    {
+        "node": TextNode("", TextType.TEXT),
+        "expected": "",
+    },
     {
         "node": TextNode("raw text test", TextType.TEXT),
         "expected": "raw text test",
@@ -57,6 +62,22 @@ convert_errors = [
 spliter_tests = [
     {
         "nodes": [
+            TextNode("", TextType.TEXT),
+        ],
+        "args": ("`", TextType.CODE),
+        "expected": [],
+    },
+    {
+        "nodes": [
+            TextNode("nothing", TextType.TEXT),
+        ],
+        "args": ("`", TextType.CODE),
+        "expected": [
+            TextNode("nothing", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [
             TextNode("This is text with a `code block` word", TextType.TEXT),
         ],
         "args": ("`", TextType.CODE),
@@ -103,6 +124,10 @@ spliter_tests = [
 
 parseImages_tests = [
     {
+        "text": "This is text with no images",
+        "expected": [],
+    },
+    {
         "text": "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
         "expected": [
             ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
@@ -118,6 +143,10 @@ parseImages_tests = [
 ]
 
 parseLinks_tests = [
+    {
+        "text": "This is text with no links",
+        "expected": [],
+    },
     {
         "text": "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
         "expected": [
@@ -136,10 +165,21 @@ parseLinks_tests = [
 splitImages_tests = [
     {
         "nodes": [
-            TextNode(
-                "![rick roll](https://i.imgur.com/aKaOqIh.gif)",
-                TextType.TEXT,
-            )
+            TextNode("", TextType.TEXT),
+        ],
+        "expected": [],
+    },
+    {
+        "nodes": [
+            TextNode("not an image", TextType.TEXT),
+        ],
+        "expected": [
+            TextNode("not an image", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [
+            TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif)", TextType.TEXT)
         ],
         "expected": [
             TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
@@ -189,21 +229,27 @@ splitImages_tests = [
 splitLinks_tests = [
     {
         "nodes": [
-            TextNode(
-                "[to boot dev](https://www.boot.dev)",
-                TextType.TEXT,
-            )
+            TextNode("", TextType.TEXT),
         ],
+        "expected": [],
+    },
+    {
+        "nodes": [
+            TextNode("not an link", TextType.TEXT),
+        ],
+        "expected": [
+            TextNode("not an link", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [TextNode("[to boot dev](https://www.boot.dev)", TextType.TEXT)],
         "expected": [
             TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
         ],
     },
     {
         "nodes": [
-            TextNode(
-                "leading text [to boot dev](https://www.boot.dev)",
-                TextType.TEXT,
-            )
+            TextNode("leading text [to boot dev](https://www.boot.dev)", TextType.TEXT)
         ],
         "expected": [
             TextNode("leading text ", TextType.TEXT),
@@ -212,10 +258,7 @@ splitLinks_tests = [
     },
     {
         "nodes": [
-            TextNode(
-                "[to boot dev](https://www.boot.dev) trailing text",
-                TextType.TEXT,
-            )
+            TextNode("[to boot dev](https://www.boot.dev) trailing text", TextType.TEXT)
         ],
         "expected": [
             TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
@@ -237,6 +280,36 @@ splitLinks_tests = [
                 "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
             ),
             TextNode(" trailing text", TextType.TEXT),
+        ],
+    },
+]
+
+to_textnodes_tests = [
+    {
+        "text": "",
+        "expected": [],
+    },
+    {
+        "text": "stuff",
+        "expected": [
+            TextNode("stuff", TextType.TEXT),
+        ],
+    },
+    {
+        "text": "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)",
+        "expected": [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode(
+                "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
         ],
     },
 ]
@@ -269,6 +342,10 @@ class TestMain(unittest.TestCase):
     def test_splitLinks(self):
         for test in splitLinks_tests:
             self.assertEqual(splitLink(test["nodes"]), test["expected"])
+
+    def test_to_textnodes(self):
+        for test in to_textnodes_tests:
+            self.assertEqual(to_textnodes(test["text"]), test["expected"])
 
 
 if __name__ == "__main__":
