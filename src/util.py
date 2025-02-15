@@ -50,7 +50,7 @@ def split_nodes_delimiter(
         while index != -1:
             indexes.append(index)
             index = node.text.find(delimiter, index + 1)
-        if len(indexes) < 2 or len(indexes) % 2 != 0:
+        if len(indexes) % 2 != 0:
             raise Exception("missing delimiter")
 
         # use indexes to slice pieces of the string into nodes
@@ -86,6 +86,7 @@ def extract_markdown_images(text: str) -> list[tuple[str, str]]:
     # TODO: this pattern makes `[` or `]` break stuff
     altPattern = r"!\[([^\[\]]*)\]"
     srcPattern = r"\(([^\(\)]*)\)"
+
     return re.findall(altPattern + srcPattern, text)
 
 
@@ -94,6 +95,7 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]]:
     textPattern = r"\[([^\[\]]*)\]"
     hrefPattern = r"\(([^\(\)]*)\)"
     excludePattern = r"(?<!!)"
+
     return re.findall(excludePattern + textPattern + hrefPattern, text)
 
 
@@ -172,16 +174,8 @@ def text_to_textnodes(text: str) -> list[TextNode]:
     textNodes = split_nodes_delimiter(textNodes, "`", TextType.CODE)
     textNodes = split_nodes_image(textNodes)
     textNodes = split_nodes_link(textNodes)
-    # print(f"\nSTART: {text}")
-    # printList(textNodes)
 
     return textNodes
-
-
-def printList(stuff: list[TextNode]):
-    print(f"\nSTUFF:")
-    for thingy in stuff:
-        print(f"\t{thingy}")
 
 
 def main():

@@ -5,7 +5,7 @@ from util import extract_markdown_images as parseImages
 from util import extract_markdown_links as parseLinks
 from util import split_nodes_image as splitImage
 from util import split_nodes_link as splitLink
-from util import text_to_textnodes as to_textnodes
+from util import text_to_textnodes as toTextNodes
 from textnode import TextNode, TextType
 
 
@@ -284,7 +284,7 @@ splitLinks_tests = [
     },
 ]
 
-to_textnodes_tests = [
+toTextNodes_tests = [
     {
         "text": "",
         "expected": [],
@@ -344,8 +344,8 @@ class TestMain(unittest.TestCase):
             self.assertEqual(splitLink(test["nodes"]), test["expected"])
 
     def test_to_textnodes(self):
-        for test in to_textnodes_tests:
-            self.assertEqual(to_textnodes(test["text"]), test["expected"])
+        for test in toTextNodes_tests:
+            self.assertEqual(toTextNodes(test["text"]), test["expected"])
 
 
 if __name__ == "__main__":

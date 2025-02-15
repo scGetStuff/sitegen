@@ -28,14 +28,15 @@ http://localhost:8888
 -   copy static assets to `public/`
 -   generate HTML file for each Markdown file in `content/`
 
-# unknown
+# assumptions
 
--   is markdown valid? so far all the `util.py` code that does the parsing assumes things are well formed
+-   markdown valid
+-   there is no nested markdown
 
 # type hints & mypy
 
 -   I'm using type hints because I hate languages that are not static typed
--   but, not using mypy yet
+-   but I am not using mypy yet
 -   the IDE behaves better with the hints; that's good enough for me
 
 # enhancments
