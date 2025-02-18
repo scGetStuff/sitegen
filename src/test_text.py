@@ -1,11 +1,11 @@
 import unittest
-from textutil import text_node_to_html_node as convert
-from textutil import split_nodes_delimiter as spliter
-from textutil import extract_markdown_images as parseImages
-from textutil import extract_markdown_links as parseLinks
-from textutil import split_nodes_image as splitImage
-from textutil import split_nodes_link as splitLink
-from textutil import text_to_textnodes as toTextNodes
+from text import text_node_to_html_node as convert
+from text import split_nodes_delimiter as spliter
+from text import extract_markdown_images as parseImages
+from text import extract_markdown_links as parseLinks
+from text import split_nodes_image as splitImage
+from text import split_nodes_link as splitLink
+from text import text_to_textnodes as toTextNodes
 from textnode import TextNode, TextType
 
 
