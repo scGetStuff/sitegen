@@ -24,13 +24,15 @@ def markdown_to_blocks(markdown: str) -> list[str]:
 def block_to_block_type(block: str) -> str:
 
     blockPatterns: dict[str, str] = {
-        BlockTypes.HEAD.value: r"^#{1,6} .*?",
+        # heading can't be empty, it would be valid markdown and pass unit test
+        # but the app strips blocks, so `# ` becomes `#` wich is a paragraph
+        BlockTypes.HEAD.value: r"^#{1,6} (?=[\S])",
         # code was matching the entire string, I do not want that
         # BlockTypes.CODE: r"^```[\s\S]*?```$",
         BlockTypes.CODE.value: r"^```(?=[\s\S]*?```$)",
-        BlockTypes.QUOTE.value: r"^>.*?",
-        BlockTypes.UL.value: r"^[\*\-](?= )",
-        BlockTypes.OL.value: r"^\d*(?=\. )",
+        BlockTypes.QUOTE.value: r"^>",
+        BlockTypes.UL.value: r"^[\*\-] (?=[\S])",
+        BlockTypes.OL.value: r"^\d*\. (?=[\S])",
     }
 
     for pattern in blockPatterns.items():

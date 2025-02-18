@@ -32,6 +32,10 @@ blockalizer_tests = [
 
 getBlockType_tests = [
     {
+        "markdown": "# ",
+        "expected": BlockTypes.PARA.value,
+    },
+    {
         "markdown": "# test",
         "expected": BlockTypes.HEAD.value,
     },
