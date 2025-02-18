@@ -27,7 +27,8 @@ class HTMLNode:
             return ""
 
         return "".join(
-            list(map(lambda item: f' {item[0]}="{item[1]}"', self.props.items()))
+            # list(map(lambda item: f' {item[0]}="{item[1]}"', self.props.items()))
+            list(map(lambda item: f' {item}="{self.props[item]}"', self.props))
         )
 
     def __repr__(self) -> str:
