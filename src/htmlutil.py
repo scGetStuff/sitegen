@@ -5,6 +5,8 @@ from leafnode import LeafNode
 from htmlnode import HTMLNode
 from block import markdown_to_blocks as blockalizer
 from block import block_to_block_type as getBlockType
+from text import text_to_textnodes
+from text import text_node_to_html_node
 
 
 def markdown_to_html_node(markdown: str) -> HTMLNode:
@@ -19,8 +21,6 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
     return root
 
 
-# TODO: I did this wrong
-# all of the blocks need to be parsed into textnodes, then htmlnodes
 # paragraph is a lie, it is a block of text that needs to be parsed
 def convertBlock(block: str, type: str) -> HTMLNode:
     match type:
@@ -40,16 +40,31 @@ def convertBlock(block: str, type: str) -> HTMLNode:
             raise Exception("bad block type")
 
 
-def makeHeading(block) -> LeafNode:
+def parseInline(text):
+    leafs = []
+    textNodes = text_to_textnodes(text)
+    # print(textNodes)
+
+    for node in textNodes:
+        leafs.append(text_node_to_html_node(node))
+
+    return leafs
+
+
+def makeHeading(block) -> ParentNode:
     parts = block.split(" ", 1)
     x = len(parts[0])
-    words = parts[1] if len(parts) > 1 else ""
-    node = LeafNode(f"h{x}", words)
+    text = parts[1] if len(parts) > 1 else ""
+    leafs = parseInline(text)
+    node = ParentNode(f"h{x}", leafs)
+
     return node
 
 
 def makeParagraph(block) -> LeafNode:
-    node = LeafNode("p", block)
+    leafs = parseInline(block)
+    node = ParentNode("p", leafs)
+
     return node
 
 
@@ -57,13 +72,14 @@ def makeCode(block) -> ParentNode:
     text = block[3:-3]
     code = LeafNode("code", text)
     pre = ParentNode("pre", [code])
+
     return pre
 
 
 def makeQuote(block) -> ParentNode:
     lines = block.split("\n")
-
     blockQuote = ParentNode("blockquote", [])
+
     for line in lines:
         quote = LeafNode("p", line[1:])
         blockQuote.children.append(quote)
@@ -71,38 +87,39 @@ def makeQuote(block) -> ParentNode:
     return blockQuote
 
 
-def makeUL(block) -> LeafNode:
+def makeUL(block) -> ParentNode:
     lines = block.split("\n")
-
     ul = ParentNode("ul", [])
+
     for line in lines:
-        li = LeafNode("li", line[2:])
+        leafs = parseInline(line[2:])
+        li = ParentNode("li", leafs)
         ul.children.append(li)
 
     return ul
 
 
-def makeOL(block) -> LeafNode:
+def makeOL(block) -> ParentNode:
     lines = block.split("\n")
-
     ol = ParentNode("ol", [])
+
     for line in lines:
         # could be arbitrary number of digits starting line
         parts = line.split(" ", 1)
         words = parts[1] if len(parts) > 1 else ""
-        li = LeafNode("li", words)
+        leafs = parseInline(words)
+        li = ParentNode("li", leafs)
         ol.children.append(li)
 
     return ol
 
 
 def main():
-    print("you are not supposed to run this module")
+    print("\nyou are not supposed to run this module\n")
 
-    s = "1. one\n" "2. two\n" "3. three"
-
-    out = markdown_to_html_node(s)
-    print(out.to_html())
+    # s = "# test"
+    # out = markdown_to_html_node(s)
+    # print(out.to_html())
 
 
 if __name__ == "__main__":

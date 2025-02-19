@@ -3,6 +3,17 @@ from leafnode import LeafNode
 import re
 
 
+def text_to_textnodes(text: str) -> list[TextNode]:
+    textNode = TextNode(text, TextType.TEXT)
+    textNodes = split_nodes_delimiter([textNode], "**", TextType.BOLD)
+    textNodes = split_nodes_delimiter(textNodes, "*", TextType.ITALIC)
+    textNodes = split_nodes_delimiter(textNodes, "`", TextType.CODE)
+    textNodes = split_nodes_image(textNodes)
+    textNodes = split_nodes_link(textNodes)
+
+    return textNodes
+
+
 def text_node_to_html_node(node: TextNode) -> LeafNode:
 
     match node.type:
@@ -165,17 +176,6 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             out.append(TextNode(text, TextType.TEXT))
 
     return out
-
-
-def text_to_textnodes(text: str) -> list[TextNode]:
-    textNode = TextNode(text, TextType.TEXT)
-    textNodes = split_nodes_delimiter([textNode], "**", TextType.BOLD)
-    textNodes = split_nodes_delimiter(textNodes, "*", TextType.ITALIC)
-    textNodes = split_nodes_delimiter(textNodes, "`", TextType.CODE)
-    textNodes = split_nodes_image(textNodes)
-    textNodes = split_nodes_link(textNodes)
-
-    return textNodes
 
 
 def main():
