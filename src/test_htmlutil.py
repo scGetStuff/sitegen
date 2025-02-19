@@ -1,0 +1,49 @@
+import unittest
+from htmlutil import markdown_to_html_node as mdToNode
+
+
+mdToNode_tests = [
+    {
+        "markdown": "",
+        "html": "<div></div>",
+    },
+    {
+        "markdown": "#### test",
+        "html": "<div><h4>test</h4></div>",
+    },
+    {
+        "markdown": "a paragraph of text\nline2",
+        "html": "<div><p>a paragraph of text\nline2</p></div>",
+    },
+    {
+        "markdown": "```code1()\ncode2()\ncode3()```",
+        "html": "<div><pre><code>code1()\ncode2()\ncode3()</code></pre></div>",
+    },
+    {
+        "markdown": ">one\n>two\n>three",
+        "html": "<div><blockquote><p>one</p><p>two</p><p>three</p></blockquote></div>",
+    },
+    {
+        "markdown": (
+            "* This is the first list item in a list block\n"
+            "* This is a list item\n"
+            "* This is another list item"
+        ),
+        "html": "<div><ul><li>This is the first list item in a list block</li><li>This is a list item</li><li>This is another list item</li></ul></div>",
+    },
+    {
+        "markdown": "1. one\n" "2. two\n" "3. three",
+        "html": "<div><ol><li>one</li><li>two</li><li>three</li></ol></div>",
+    },
+]
+
+
+class TestMain(unittest.TestCase):
+    def test_mdToNode(self):
+        for test in mdToNode_tests:
+            node = mdToNode(test["markdown"])
+            self.assertEqual(node.to_html(), test["html"])
+
+
+if __name__ == "__main__":
+    unittest.main()
