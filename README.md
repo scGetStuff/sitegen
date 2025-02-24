@@ -22,12 +22,6 @@ python3 -m http.server 8888
 
 http://localhost:8888
 
-# main algorithim
-
--   `rm public/*`
--   copy static assets to `public/`
--   generate HTML file for each Markdown file in `content/`
-
 # assumptions
 
 -   markdown valid
