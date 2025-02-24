@@ -15,7 +15,9 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     blocks = markdown.split("\n\n")
     blocks = map(lambda block: block.strip(), blocks)
     blocks = filter(lambda block: len(block) > 0, blocks)
-    return list(blocks)
+    blocks = list(blocks)
+    # print(f"\n{blocks}\n")
+    return blocks
 
 
 # these checks start to become validation of the markdown; not doing it
@@ -31,8 +33,8 @@ def block_to_block_type(block: str) -> str:
         # BlockTypes.CODE: r"^```[\s\S]*?```$",
         BlockTypes.CODE.value: r"^```(?=[\s\S]*?```$)",
         BlockTypes.QUOTE.value: r"^>",
-        BlockTypes.UL.value: r"^[\*\-] (?=[\S])",
-        BlockTypes.OL.value: r"^\d*\. (?=[\S])",
+        BlockTypes.UL.value: r"^[\*\-] +(?=[\S])",
+        BlockTypes.OL.value: r"^\d*\. +(?=[\S])",
     }
 
     for pattern in blockPatterns.items():
