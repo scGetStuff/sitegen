@@ -5,6 +5,7 @@ from block import markdown_to_blocks as blockalizer
 from htmlutil import markdown_to_html_node as mdToNode
 
 INPUTFILE = "content/index.md"
+INPUT = "content"
 TEMPLATE = "template.html"
 STATIC = "static"
 OUT = "public"
@@ -14,7 +15,30 @@ def main():
     print("Build a Static Site Generator")
 
     copyAllFiles(STATIC, OUT)
-    generate_page(STATIC, TEMPLATE, OUT)
+    # generate_page(INPUTFILE, TEMPLATE, OUT)
+    generate_pages_recursive(INPUT, TEMPLATE, OUT)
+
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+
+    if os.path.isfile(dir_path_content):
+        generate_page(dir_path_content, template_path, dest_dir_path)
+        return
+
+    content = os.listdir(dir_path_content)
+    # print(f"DIR: {dir_path_content}\n{content}")
+    for thing in content:
+        src = os.path.join(dir_path_content, thing)
+        dest = dest_dir_path
+
+        # create the sub-dir in output location
+        if not os.path.isfile(src):
+            dest = os.path.join(dest_dir_path, thing)
+            if not os.path.exists(dest):
+                os.mkdir(dest)
+
+        # print(f"\nFROM: {src}\nTO: {dest}")
+        generate_pages_recursive(src, template_path, dest)
 
 
 def generate_page(from_path, template_path, dest_path):
@@ -22,24 +46,24 @@ def generate_page(from_path, template_path, dest_path):
         f"Generating page from '{from_path}' to '{dest_path}' using '{template_path}'"
     )
 
-    templ = getFileText(TEMPLATE)
+    templateHTML = getFileText(template_path)
     # print(templ)
-    markdown = getFileText(INPUTFILE)
+    markdown = getFileText(from_path)
     # print(markdown)
     title = extract_title(markdown)
     # print(title)
     htmlContent = mdToNode(markdown).to_html()
     # print(html)
-    htmlName = getOutName(INPUTFILE)
+    htmlFileName = getHTMLFileName(from_path)
     # print(htmlName)
-    newContent = templ.replace("{{ Title }}", title)
-    newContent = templ.replace("{{ Content }}", htmlContent)
+    newContent = templateHTML.replace("{{ Title }}", title)
+    newContent = newContent.replace("{{ Content }}", htmlContent)
     # print(newContent)
-    isGood = writeOut(htmlName, newContent)
+    isGood = writeOut(dest_path, htmlFileName, newContent)
     print(f"It did good stuff: {isGood}")
 
 
-def getOutName(filePath: str):
+def getHTMLFileName(filePath: str):
     fileName = os.path.split(filePath)[1]
     parts = fileName.split(".")
     parts[len(parts) - 1] = "html"
@@ -48,8 +72,8 @@ def getOutName(filePath: str):
     return htmlName
 
 
-def writeOut(fileName: str, htmlContent: str) -> str:
-    file = os.path.join(OUT, fileName)
+def writeOut(dir, fileName: str, htmlContent: str) -> str:
+    file = os.path.join(dir, fileName)
     # print(file)
     count = 0
 
