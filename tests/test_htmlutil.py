@@ -21,7 +21,7 @@ mdToNode_tests = [
     },
     {
         "markdown": ">one\n>two\n>three",
-        "html": "<div><blockquote><p>one</p><p>two</p><p>three</p></blockquote></div>",
+        "html": "<div><blockquote>one\ntwo\nthree</blockquote></div>",
     },
     {
         "markdown": (

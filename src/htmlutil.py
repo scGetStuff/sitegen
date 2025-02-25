@@ -78,11 +78,14 @@ def makeCode(block) -> ParentNode:
 
 def makeQuote(block) -> ParentNode:
     lines = block.split("\n")
-    blockQuote = ParentNode("blockquote", [])
+    # spec does not say it needs a space '> '
+    # so I don't check for one, it is just part of the text
+    # but the submission test bitches about the leading whitespace in the output
+    lines = list(map(lambda line: line[1:].lstrip(), lines))
+    # lines = list(map(lambda line: line[1:], lines))
+    leafs = parseInline("\n".join(lines))
 
-    for line in lines:
-        quote = LeafNode("p", line[1:])
-        blockQuote.children.append(quote)
+    blockQuote = ParentNode("blockquote", leafs)
 
     return blockQuote
 
@@ -117,7 +120,7 @@ def makeOL(block) -> ParentNode:
 def main():
     print("\nyou are not supposed to run this module\n")
 
-    # s = "# test"
+    # s = "> test"
     # out = markdown_to_html_node(s)
     # print(out.to_html())
 
