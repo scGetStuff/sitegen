@@ -20,8 +20,8 @@ mdToNode_tests = [
         "html": "<div><pre><code>code1()\ncode2()\ncode3()</code></pre></div>",
     },
     {
-        "markdown": ">one\n>two\n>three",
-        "html": "<div><blockquote>one\ntwo\nthree</blockquote></div>",
+        "markdown": "> one\n> two\n> three",
+        "html": "<div><blockquote>one two three</blockquote></div>",
     },
     {
         "markdown": (

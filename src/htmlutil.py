@@ -40,7 +40,7 @@ def convertBlock(block: str, type: str) -> HTMLNode:
             raise Exception("bad block type")
 
 
-def parseInline(text):
+def parseInline(text: str):
     leafs = []
     textNodes = text_to_textnodes(text)
     # print(textNodes)
@@ -51,7 +51,7 @@ def parseInline(text):
     return leafs
 
 
-def makeHeading(block) -> ParentNode:
+def makeHeading(block: str) -> ParentNode:
     parts = block.split(" ", 1)
     x = len(parts[0])
     text = parts[1] if len(parts) > 1 else ""
@@ -61,14 +61,14 @@ def makeHeading(block) -> ParentNode:
     return node
 
 
-def makeParagraph(block) -> LeafNode:
+def makeParagraph(block: str) -> LeafNode:
     leafs = parseInline(block)
     node = ParentNode("p", leafs)
 
     return node
 
 
-def makeCode(block) -> ParentNode:
+def makeCode(block: str) -> ParentNode:
     text = block[3:-3]
     code = LeafNode("code", text)
     pre = ParentNode("pre", [code])
@@ -76,21 +76,19 @@ def makeCode(block) -> ParentNode:
     return pre
 
 
-def makeQuote(block) -> ParentNode:
-    lines = block.split("\n")
-    # spec does not say it needs a space '> '
-    # so I don't check for one, it is just part of the text
-    # but the submission test bitches about the leading whitespace in the output
-    lines = list(map(lambda line: line[1:].lstrip(), lines))
-    # lines = list(map(lambda line: line[1:], lines))
-    leafs = parseInline("\n".join(lines))
+def makeQuote(block: str) -> ParentNode:
+    block = block.replace("\n", "")
+    block = block.replace(">", "")
+    block = block.strip()
+    # print(block)
 
+    leafs = parseInline(block)
     blockQuote = ParentNode("blockquote", leafs)
 
     return blockQuote
 
 
-def makeUL(block) -> ParentNode:
+def makeUL(block: str) -> ParentNode:
     lines = block.split("\n")
     ul = ParentNode("ul", [])
 
@@ -102,7 +100,7 @@ def makeUL(block) -> ParentNode:
     return ul
 
 
-def makeOL(block) -> ParentNode:
+def makeOL(block: str) -> ParentNode:
     lines = block.split("\n")
     ol = ParentNode("ol", [])
 
