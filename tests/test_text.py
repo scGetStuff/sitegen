@@ -307,6 +307,12 @@ toTextNodes_tests = [
         ],
     },
     {
+        "text": "`555-555-5555`",
+        "expected": [
+            TextNode("555-555-5555", TextType.CODE),
+        ],
+    },
+    {
         "text": "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)",
         "expected": [
             TextNode("This is ", TextType.TEXT),
