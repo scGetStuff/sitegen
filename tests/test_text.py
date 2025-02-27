@@ -112,6 +112,17 @@ spliter_tests = [
     },
     {
         "nodes": [
+            TextNode("italic _word_ using underscore", TextType.TEXT),
+        ],
+        "args": ("_", TextType.ITALIC),
+        "expected": [
+            TextNode("italic ", TextType.TEXT),
+            TextNode("word", TextType.ITALIC),
+            TextNode(" using underscore", TextType.TEXT),
+        ],
+    },
+    {
+        "nodes": [
             TextNode("This ends with a **bold word**", TextType.TEXT),
         ],
         "args": ("**", TextType.BOLD),
