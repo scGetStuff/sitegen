@@ -16,8 +16,8 @@ mdToNode_tests = [
         "html": "<div><p>a paragraph of text\nline2</p></div>",
     },
     {
-        "markdown": "```code1()\ncode2()\ncode3()```",
-        "html": "<div><pre><code>code1()\ncode2()\ncode3()</code></pre></div>",
+        "markdown": "```\ncode1()\ncode2()\ncode3()\n```",
+        "html": "<div><pre><code>\ncode1()\ncode2()\ncode3()\n</code></pre></div>",
     },
     {
         "markdown": "> one\n> two\n> three",

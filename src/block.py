@@ -13,10 +13,10 @@ class BlockTypes(Enum):
 
 def markdown_to_blocks(markdown: str) -> list[str]:
     blocks = markdown.split("\n\n")
+    # print(f"\n{blocks}\n")
     blocks = map(lambda block: block.strip(), blocks)
     blocks = filter(lambda block: len(block) > 0, blocks)
     blocks = list(blocks)
-    # print(f"\n{blocks}\n")
     return blocks
 
 
@@ -31,7 +31,8 @@ def block_to_block_type(block: str) -> str:
         BlockTypes.HEAD.value: r"^#{1,6} (?=[\S])",
         # code was matching the entire string, I do not want that
         # BlockTypes.CODE: r"^```[\s\S]*?```$",
-        BlockTypes.CODE.value: r"^```(?=[\s\S]*?```$)",
+        # BlockTypes.CODE.value: r"^```(?=[\s\S]*?```$)",
+        BlockTypes.CODE.value: r"`{3}([\S\s]*)\n`{3}",
         BlockTypes.QUOTE.value: r"^>",
         BlockTypes.UL.value: r"^[\*\-] +(?=[\S])",
         BlockTypes.OL.value: r"^\d*\. +(?=[\S])",

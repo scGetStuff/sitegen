@@ -48,11 +48,11 @@ getBlockType_tests = [
         "expected": BlockTypes.PARA.value,
     },
     {
-        "markdown": "```code()```",
+        "markdown": "```\ncode()\n```",
         "expected": BlockTypes.CODE.value,
     },
     {
-        "markdown": "```code1()\ncode2()\ncode3()```",
+        "markdown": "```\ncode1()\ncode2()\ncode3()\n```",
         "expected": BlockTypes.CODE.value,
     },
     {
