@@ -63,7 +63,7 @@ def split_nodes_delimiter(
             indexes.append(index)
             index = node.text.find(delimiter, index + 1)
         if len(indexes) % 2 != 0:
-            raise Exception("missing delimiter")
+            raise Exception(f"missing delimiter '{delimiter}' in tex '{node.text}'")
 
         # use indexes to slice pieces of the string into nodes
         start = 0
