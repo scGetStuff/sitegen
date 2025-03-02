@@ -1,10 +1,11 @@
 import os
+import sys
 import shutil
 import re
 from block import markdown_to_blocks as blockalizer
 from htmlutil import markdown_to_html_node as mdToNode
 
-INPUTFILE = "content/index.md"
+# INPUTFILE = "content/index.md"
 INPUT = "content"
 TEMPLATE = "template.html"
 STATIC = "static"
@@ -14,15 +15,25 @@ OUT = "public"
 def main():
     print("Build a Static Site Generator")
 
+    basePath = "/"
+    if len(sys.argv) > 1:
+        basePath = sys.argv[1]
+    # print(basePath)
+
     copyAllFiles(STATIC, OUT)
-    # generate_page(INPUTFILE, TEMPLATE, OUT)
-    generate_pages_recursive(INPUT, TEMPLATE, OUT)
+    # generate_page(INPUTFILE, TEMPLATE, OUT, basePath)
+    generate_pages_recursive(INPUT, TEMPLATE, OUT, basePath)
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(
+    dir_path_content: str,
+    template_path: str,
+    dest_dir_path: str,
+    basePath: str,
+):
 
     if os.path.isfile(dir_path_content):
-        generate_page(dir_path_content, template_path, dest_dir_path)
+        generate_page(dir_path_content, template_path, dest_dir_path, basePath)
         return
 
     content = os.listdir(dir_path_content)
@@ -38,10 +49,15 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 os.mkdir(dest)
 
         # print(f"\nFROM: {src}\nTO: {dest}")
-        generate_pages_recursive(src, template_path, dest)
+        generate_pages_recursive(src, template_path, dest, basePath)
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(
+    from_path: str,
+    template_path: str,
+    dest_path: str,
+    basePath: str,
+):
     print(
         f"Generating page from '{from_path}' to '{dest_path}' using '{template_path}'"
     )
@@ -59,11 +75,13 @@ def generate_page(from_path, template_path, dest_path):
     newContent = templateHTML.replace("{{ Title }}", title)
     newContent = newContent.replace("{{ Content }}", htmlContent)
     # print(newContent)
+    newContent = newContent.replace('href="/', f'href="{basePath}')
+    newContent = newContent.replace('src="/', f'src="{basePath}')
     isGood = writeOut(dest_path, htmlFileName, newContent)
     print(f"It did good stuff: {isGood}")
 
 
-def getHTMLFileName(filePath: str):
+def getHTMLFileName(filePath: str) -> str:
     fileName = os.path.split(filePath)[1]
     parts = fileName.split(".")
     parts[len(parts) - 1] = "html"
@@ -72,7 +90,7 @@ def getHTMLFileName(filePath: str):
     return htmlName
 
 
-def writeOut(dir, fileName: str, htmlContent: str) -> str:
+def writeOut(dir: str, fileName: str, htmlContent: str) -> bool:
     file = os.path.join(dir, fileName)
     # print(file)
     count = 0
