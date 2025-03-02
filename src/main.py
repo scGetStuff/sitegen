@@ -9,7 +9,7 @@ from htmlutil import markdown_to_html_node as mdToNode
 INPUT = "content"
 TEMPLATE = "template.html"
 STATIC = "static"
-OUT = "public"
+OUT = "docs"
 
 
 def main():
