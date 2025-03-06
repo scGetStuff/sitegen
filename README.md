@@ -22,6 +22,13 @@ python3 -m http.server 8888
 
 http://localhost:8888
 
+## GitHub Pages
+
+https://scGetStuff.github.io/sitegen
+
+-   added `docs/` to repo for Pages
+-   this should be an orphan branch with no history
+
 # assumptions
 
 -   markdown valid
