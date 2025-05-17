@@ -1,4 +1,4 @@
-# "Build a Static Site Generator" project
+# boot.dev "Build a Static Site Generator" project
 
 -   https://www.boot.dev/
 -   https://github.com/scGetStuff/sitegen.git
